@@ -1,0 +1,1 @@
+from .views_fbv import sign_up_user
