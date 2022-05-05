@@ -3,6 +3,7 @@ from .models import Album, Artist, Category, CustomUser, Music, MusicLike, Music
 from rest_framework.validators import UniqueTogetherValidator
 from django.contrib.auth.hashers import make_password
 
+
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     is_staff = serializers.BooleanField(default=False, read_only=True)
@@ -13,8 +14,6 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ('id', 'password', 'username', 'is_staff')
-
-
 
 
 class MusicsContainerSerializer(serializers.Serializer):
@@ -33,6 +32,13 @@ class CategorySerializer(MusicsContainerSerializer, serializers.ModelSerializer)
         fields = "__all__"
         # fields = ['id', 'title']
 
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Category.objects.all(),
+                fields=['title']
+            )
+        ]
+
 
 class AlbumSerializer(MusicsContainerSerializer, serializers.ModelSerializer):
 
@@ -40,6 +46,12 @@ class AlbumSerializer(MusicsContainerSerializer, serializers.ModelSerializer):
         model = Album
         fields = "__all__"
         # fields = ['id', 'title']
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Album.objects.all(),
+                fields=['title']
+            )
+        ]
 
 
 class ArtistSerializer(MusicsContainerSerializer, serializers.ModelSerializer):
@@ -49,6 +61,13 @@ class ArtistSerializer(MusicsContainerSerializer, serializers.ModelSerializer):
         fields = "__all__"
         # fields = ['id', 'title']
 
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Artist.objects.all(),
+                fields=['title']
+            )
+        ]
+
 
 class PlaylistSerializer(MusicsContainerSerializer, serializers.ModelSerializer):
 
@@ -56,6 +75,13 @@ class PlaylistSerializer(MusicsContainerSerializer, serializers.ModelSerializer)
         model = PersonalPlaylist
         fields = "__all__"
         # fields = ['id', 'title']
+
+        validators = [
+            UniqueTogetherValidator(
+                queryset=PersonalPlaylist.objects.all(),
+                fields=['title']
+            )
+        ]
 
 
 class MusicSerializer(serializers.ModelSerializer):
