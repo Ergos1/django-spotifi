@@ -1,6 +1,6 @@
 from django.core.signals import request_finished, request_started
 from django.dispatch import receiver
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 import logging
 
 from api.models import CustomUser, Music, PersonalPlaylist
@@ -14,6 +14,10 @@ def file_upload_started_callback(sender, **kwargs):
 @receiver(request_finished)
 def file_upload_finished_callback(sender, **kwargs):
     logger.info("some request finished")
+
+@receiver(pre_save, sender=CustomUser)
+def pre_new_user(sender, instance, **kwargs):
+    logger.info("New user try to create: {}".format(instance))
 
 @receiver(post_save, sender=CustomUser)
 def new_user(sender, instance, **kwargs):
