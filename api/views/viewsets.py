@@ -11,7 +11,7 @@ from rest_framework.response import Response
 
 
 
-from api.models import Category, Music
+from api.models import Album, Artist, Category, Music
 from api.serializers import MusicSerializer
 
 import logging
@@ -32,8 +32,15 @@ class MusicViewSet(viewsets.ViewSet):
 
     def list(self, request):
         category = request.GET.get('category')
+        album = request.GET.get('album')
+        artist = request.GET.get('artist')
+        logger.info("category - {}; album - {}; artist - {}".format(category, album, artist))
         if category != None:
             self.queryset = Music.manager.get_by_category(category=Category.objects.get(title=category))
+        elif album != None:
+            self.queryset = Music.manager.get_by_album(album=Album.objects.get(title=album))
+        elif artist != None:
+            self.queryset = Music.manager.get_by_album(artist=Artist.objects.get(title=artist))
         else:
             self.queryset = Music.objects.all()
         serializer = MusicSerializer(self.queryset, many=True)
@@ -41,7 +48,7 @@ class MusicViewSet(viewsets.ViewSet):
 
     def retrieve(self, request, pk=None):
         music = Music.objects.get(pk=pk)
-        serializer = Music(music, many=False)
+        serializer = MusicSerializer(music, many=False)
         
         return Response({"music": serializer.data})
     # @action(methods=['post'], detail=True)

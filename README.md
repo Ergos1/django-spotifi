@@ -1,5 +1,6 @@
 # DJANGO FINAL PROJECT
-**Project name**: Spotifi
+## **Project name**: 
+Spotifi
 **Project description**: Spotifi is a digital music that gives you access to millions of songs and other content from creators all over the world. Basic functions such as playing music are totally free.
     There will be more 9 entities in database, starting from just user and ended with playlists. Every user can listen, put like, filter and order music by self desire. User also can change profile image, and username. Admin is like user but have more permissions like add music or remove it. 
      And there are not all. There will be a algorithm_bot_v001 which will make personal/general playlists for 24h every day. It just ran by table user_category_count, which will count how many times user listened some category

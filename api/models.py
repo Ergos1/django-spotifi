@@ -5,7 +5,8 @@ from django.contrib.auth.models import AbstractUser
 # Create your models here.
 from django.conf import settings
 
-from api.manager import MusicManager
+from api.managers import MusicManager, PlaylistManager
+from django.core.validators import MinLengthValidator
 
 
 class CustomUser(AbstractUser):
@@ -15,19 +16,21 @@ class CustomUser(AbstractUser):
 
 class MusicsContainer(models.Model):
     title = models.CharField(
-        max_length=255, default="unknown music container :p", unique=True)
+        max_length=255, default="unknown music container :p", unique=True, validators=[MinLengthValidator(4)])
 
     class Meta:
         abstract = True
 
 
-class Playlist(MusicsContainer):
-    pass
 
 
-class PersonalPlaylist(Playlist):
+class PersonalPlaylist(models.Model):
+    title = models.CharField(max_length=255, default="unknown :p", validators=[MinLengthValidator(4)])
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
                               on_delete=models.CASCADE)
+    
+    objects = models.Manager()
+    manager = PlaylistManager()
 
 
 class Category(MusicsContainer):
@@ -45,7 +48,7 @@ class Artist(MusicsContainer):
 class Music(models.Model):
     title = models.CharField(max_length=255, default="unknown music :p")
     url = models.URLField()
-    playlists = models.ManyToManyField(Playlist, default=[])
+    playlists = models.ManyToManyField(PersonalPlaylist, default=[])
     category = models.ForeignKey(
         Category, on_delete=models.CASCADE, default=None, null=True)
     album = models.ForeignKey(

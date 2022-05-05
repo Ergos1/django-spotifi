@@ -34,6 +34,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django_crontab',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -91,12 +92,13 @@ DATABASES = {
     }
 }
 
+
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 5,
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
-
+        'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
@@ -231,3 +233,7 @@ LOGGING = {
         }
     }
 }
+
+CRONJOBS = [
+    ('*/5 * * * *', 'api.cron.update_playlists', '>> /tmp/scheduled_job.log')
+]

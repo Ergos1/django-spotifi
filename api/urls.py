@@ -15,13 +15,13 @@ router.register(r'musics', viewsets.MusicViewSet, basename="Music")
 urlpatterns = [
     path('', include(router.urls)),
 
-    path('user/profile_image', file_upload.upload_image),
+    path('user/profile_image/', file_upload.upload_image),
     path('music/like/', views_fbv.like_music),
     path('music/view/', views_fbv.view_music),
     path('categories/', views_cbv.CategoryList.as_view(), name="category_list"),
     path('albums/', views_cbv.AlbumList.as_view(), name="album_list"),
     path('artists/', views_cbv.ArtistList.as_view(), name="artist_list"),
-    path('playlists/', views_cbv.PlaylistList.as_view(), name="artist_list"),
+    path('playlist/', views_cbv.PlaylistList.as_view(), name="artist_list"),
     path('sign-up/', views_fbv.sign_up_user, name="user_create"),
     path('sign-in/', TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path('token/refresh/', TokenRefreshView.as_view(), name="token_refresh"),

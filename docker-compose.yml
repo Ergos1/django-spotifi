@@ -27,6 +27,21 @@ services:
       - ./.env
     volumes:
       - .:/usr/src/app
+  
+  # cron:
+  #   build:             
+  #     context: .
+  #     dockerfile: ./.docker/Dockerfile
+  #   container_name: 'spotifi-app-cron'
+  #   command: cron -f
+  #   depends_on:
+  #     - db
+  #   networks:
+  #   - spotifi_db
+  #   env_file:
+  #     - ./.env
+  #   volumes:
+  #     - .:/usr/src/app
 
 networks:
   spotifi_db:

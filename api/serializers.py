@@ -1,21 +1,20 @@
 from rest_framework import serializers
-from .models import Album, Artist, Category, CustomUser, Music, MusicLike, MusicView, Playlist
-from django.conf import settings
-
+from .models import Album, Artist, Category, CustomUser, Music, MusicLike, MusicView, PersonalPlaylist
+from rest_framework.validators import UniqueTogetherValidator
+from django.contrib.auth.hashers import make_password
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     is_staff = serializers.BooleanField(default=False, read_only=True)
 
+    def validate_password(self, value: str) -> str:
+        return make_password(value)
+
     class Meta:
         model = CustomUser
         fields = ('id', 'password', 'username', 'is_staff')
 
-    def create(self, validated_data):
-        user = super(UserSerializer, self).create(validated_data)
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
+
 
 
 class MusicsContainerSerializer(serializers.Serializer):
@@ -54,7 +53,7 @@ class ArtistSerializer(MusicsContainerSerializer, serializers.ModelSerializer):
 class PlaylistSerializer(MusicsContainerSerializer, serializers.ModelSerializer):
 
     class Meta:
-        model = Playlist
+        model = PersonalPlaylist
         fields = "__all__"
         # fields = ['id', 'title']
 
@@ -69,8 +68,10 @@ class MusicSerializer(serializers.ModelSerializer):
     artist_title = serializers.CharField(write_only=True)
     album_title = serializers.CharField(write_only=True)
 
-    likes = serializers.IntegerField(source="musiclike_set.count", read_only=True)
-    views = serializers.IntegerField(source="musicview_set.count", read_only=True)
+    likes = serializers.IntegerField(
+        source="musiclike_set.count", read_only=True)
+    views = serializers.IntegerField(
+        source="musicview_set.count", read_only=True)
 
     def create(self, validated_data):
         music = Music.objects.create(title=validated_data['title'],
@@ -84,6 +85,14 @@ class MusicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Music
+        fields = "__all__"
+
+
+class PersonalPlaylistSerializer(PlaylistSerializer):
+    musics = MusicSerializer(source="music_set", many=True)
+
+    class Meta:
+        model = PersonalPlaylist
         fields = "__all__"
 
 
@@ -103,6 +112,13 @@ class MusicLikeSerializer(UserAndMusicContainerSerializer, serializers.ModelSeri
         model = MusicLike
         fields = "__all__"
 
+        validators = [
+            UniqueTogetherValidator(
+                queryset=MusicLike.objects.all(),
+                fields=['user', 'music']
+            )
+        ]
+
 
 class MusicViewSerializer(UserAndMusicContainerSerializer, serializers.ModelSerializer):
     user_id = serializers.IntegerField(write_only=True)
@@ -111,3 +127,10 @@ class MusicViewSerializer(UserAndMusicContainerSerializer, serializers.ModelSeri
     class Meta:
         model = MusicView
         fields = "__all__"
+
+        validators = [
+            UniqueTogetherValidator(
+                queryset=MusicView.objects.all(),
+                fields=['user', 'music']
+            )
+        ]
