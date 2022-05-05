@@ -15,11 +15,9 @@ logger = logging.getLogger('django')
 @api_view(["POST"])
 def upload_image(request):
     if request.method == "POST":
-        request_started.connect(file_upload_started_callback)
         logger.info("Files: {}".format(request.FILES))
         user = CustomUser.objects.get(id=request.user.id)
         logger.info("User: {}".format(user))
         user.logo_image = request.FILES['image']
         user.save()
-        request_finished.connect(file_upload_finished_callback)
         return Response({"message": "Image successfully uploaded"})

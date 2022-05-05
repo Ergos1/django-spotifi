@@ -10,7 +10,6 @@ from django.core.cache import cache
 
 import logging
 
-from api.views.views_fbv import get_user_personal_musics
 logger = logging.getLogger('django')
 
 
@@ -93,7 +92,7 @@ class PlaylistList(APIView):
             users = CustomUser.objects.all()
             for user in users:
                 logger.info("user:{}".format(user))
-                musics_data = get_user_personal_musics(user)
+                musics_data = self.get_user_personal_musics(user)
                 musics_ids = [music_data['id'] for music_data in musics_data]
                 logger.info("ids: {}".format(musics_ids))
                 musics = Music.objects.filter(id__in=musics_ids)
